@@ -15,10 +15,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-/**
- * Thin orchestrator that routes events to specialized managers.
- * Owns the BeggerContext (state) and TickScheduler.
- */
 public class BeggerHandler {
 
     private final BeggerContext ctx = new BeggerContext();
@@ -82,7 +78,7 @@ public class BeggerHandler {
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.START || !McUtil.hasPlayer()) return;
-        
+
         RankBeggerModule mod = RankBegger.moduleManager.getModuleByClass(RankBeggerModule.class);
         if (mod == null || !mod.toggled) {
             ctx.idMessageSent = false;
@@ -101,10 +97,8 @@ public class BeggerHandler {
 
         long now = System.currentTimeMillis();
 
-        // Tick scheduler
         scheduler.tick(now);
 
-        // Periodic identification message
         if (ctx.targetUsername == null || now - ctx.lastIdMessageTime >= 600000L) {
             long delay = ctx.targetUsername == null ? 20000L : 600000L;
             if (!ctx.idMessageSent || now - ctx.lastIdMessageTime >= delay) {
@@ -115,7 +109,6 @@ public class BeggerHandler {
             }
         }
 
-        // Failsafes
         if (mod.failsafe.isEnabled()) {
             failsafeManager.tick(mod);
             failsafeManager.handleGuiClicks();
@@ -126,13 +119,11 @@ public class BeggerHandler {
         if (ctx.failsafeState != FailsafeState.BEGGING) return;
         if (ctx.targetUsername == null) return;
 
-        // Message simulation
         if (typingSimulator.hasPending()) {
             typingSimulator.tickPendingMessage(now);
             return;
         }
 
-        // Beg logic
         boolean shouldBeg = !mod.smartMode.isEnabled() || (now - ctx.lastGiftTime <= 120000) || !ctx.firstBegSent;
         if (shouldBeg) {
             long delayMs = (long) (mod.delay.getValue() * 1000) + ctx.currentJitter;
@@ -141,20 +132,17 @@ public class BeggerHandler {
             }
         }
 
-        // Anti-AFK
         if (McUtil.mc().currentScreen == null) {
             antiAfkManager.tick(now);
         } else {
             antiAfkManager.releaseAllKeys();
         }
 
-        // HUD/Rank sync
         if (now - ctx.lastRankUpdateTime > 1000L) {
             rankDetector.updateCurrentRankFromScoreboard();
             ctx.lastRankUpdateTime = now;
         }
 
-        // Gift Manager tick (webhook screens, book GUI)
         giftManager.tick(now);
     }
 }

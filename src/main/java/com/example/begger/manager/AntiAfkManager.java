@@ -3,9 +3,6 @@ package com.example.begger.manager;
 import com.example.begger.util.McUtil;
 import net.minecraft.client.settings.KeyBinding;
 
-/**
- * Handles anti-AFK movement: periodically steps left/right to avoid idle kicks.
- */
 public class AntiAfkManager {
 
     private final java.util.Random random;

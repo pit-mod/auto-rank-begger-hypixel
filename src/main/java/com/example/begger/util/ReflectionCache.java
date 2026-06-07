@@ -10,31 +10,22 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-/**
- * Caches reflection lookups that would otherwise be scanned every tick.
- * All fields/methods are resolved once at class-load time.
- */
 public final class ReflectionCache {
 
     private ReflectionCache() {}
 
-    // ── GuiScreenBook: ItemStack field ────────────────────────────
     public static final Field BOOK_STACK_FIELD;
 
-    // ── GuiScreenBook: getChatComponent(int, int) method ─────────
     public static final Method BOOK_GET_CHAT_COMPONENT;
 
-    // ── GuiScreen: mouseClicked(int, int, int) method ────────────
     public static final Method SCREEN_MOUSE_CLICKED;
 
-    // ── GuiScreen: buttonList field ──────────────────────────────
     public static final Field SCREEN_BUTTON_LIST;
 
-    // ── GuiScreen: actionPerformed(GuiButton) method ─────────────
     public static final Method SCREEN_ACTION_PERFORMED;
 
     static {
-        // --- GuiScreenBook.bookStack (ItemStack field) ---
+
         Field bookField = null;
         for (Field f : GuiScreenBook.class.getDeclaredFields()) {
             if (f.getType() == ItemStack.class) {
@@ -45,7 +36,6 @@ public final class ReflectionCache {
         }
         BOOK_STACK_FIELD = bookField;
 
-        // --- GuiScreenBook.getChatComponent(int, int) ---
         Method chatCompMethod = null;
         for (Method m : GuiScreenBook.class.getDeclaredMethods()) {
             if (m.getParameterCount() == 2
@@ -59,7 +49,6 @@ public final class ReflectionCache {
         }
         BOOK_GET_CHAT_COMPONENT = chatCompMethod;
 
-        // --- GuiScreen.mouseClicked(int, int, int) ---
         Method mouseMethod = null;
         for (Method m : GuiScreen.class.getDeclaredMethods()) {
             if (m.getParameterCount() == 3
@@ -73,7 +62,6 @@ public final class ReflectionCache {
         }
         SCREEN_MOUSE_CLICKED = mouseMethod;
 
-        // --- GuiScreen.buttonList (List field) ---
         Field btnField = null;
         for (Field f : GuiScreen.class.getDeclaredFields()) {
             if (f.getType() == List.class) {
@@ -84,7 +72,6 @@ public final class ReflectionCache {
         }
         SCREEN_BUTTON_LIST = btnField;
 
-        // --- GuiScreen.actionPerformed(GuiButton) ---
         Method actionMethod = null;
         for (Method m : GuiScreen.class.getDeclaredMethods()) {
             if (m.getParameterCount() == 1

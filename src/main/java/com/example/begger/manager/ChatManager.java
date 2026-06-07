@@ -11,10 +11,6 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 
 import java.util.LinkedHashMap;
 
-/**
- * Handles all incoming chat events: gift detection, lobby detection,
- * player identification, and gifter GG-message queuing.
- */
 public class ChatManager {
 
     private final BeggerContext ctx;
@@ -52,7 +48,6 @@ public class ChatManager {
 
         String text = event.message.getUnformattedText();
 
-        // Lobby detection
         if (text.contains("already in Bed Wars Lobby #1")) {
             ctx.reachedLobby1 = true;
             if (ctx.failsafeState != FailsafeState.BEGGING) {
@@ -61,7 +56,6 @@ public class ChatManager {
             }
         }
 
-        // ID echo -> identify target
         if (ctx.lastSentIdMessage != null && text.contains(ctx.lastSentIdMessage)) {
             String[] parts = text.split(":");
             if (parts.length > 0) {
@@ -74,7 +68,6 @@ public class ChatManager {
             }
         }
 
-        // Rank update on lobby join
         if (ctx.targetUsername != null && text.contains(" joined the lobby!")) {
             String namePart = text.replace(" joined the lobby!", "").trim();
             if (namePart.endsWith(ctx.targetUsername)) {
@@ -82,7 +75,6 @@ public class ChatManager {
             }
         }
 
-        // Gift detection -> queue GG messages
         if (text.contains(" gifted ") && text.contains(" to ")) {
             ctx.lastGiftTime = System.currentTimeMillis();
 
@@ -91,7 +83,6 @@ public class ChatManager {
                 String gifterPart = parts[0].trim();
                 String[] nameParts = gifterPart.split(" ");
                 String lastGifterName = nameParts[nameParts.length - 1];
-                ctx.lastGifterName = lastGifterName;
 
                 RankBeggerModule mod = RankBegger.moduleManager.getModuleByClass(RankBeggerModule.class);
                 if (mod != null && mod.toggled) {
@@ -104,7 +95,6 @@ public class ChatManager {
                         gifterQueue.put(lastGifterName, gifterQueue.get(lastGifterName) + 1);
                     }
 
-                    // Schedule delayed GG via tick scheduler (replaces unsafe Thread.sleep)
                     if (queueWasEmpty) {
                         ggFirstPending = true;
                         final String gifterName = gifterQueue.keySet().iterator().next();

@@ -22,8 +22,8 @@ public class WebhookTestModule extends Module {
             return;
         }
 
-        String url = mainModule.webhookUrl.getContent();
-        if (url == null || url.isEmpty()) {
+        String url = WebhookUtil.normalizeWebhookUrl(mainModule.webhookUrl.getContent());
+        if (!WebhookUtil.isConfigured(url)) {
             if (mc.thePlayer != null) {
                 mc.thePlayer.addChatMessage(new net.minecraft.util.ChatComponentText(EnumChatFormatting.RED + "[Begger] Webhook URL is empty!"));
             }
@@ -35,10 +35,8 @@ public class WebhookTestModule extends Module {
             mc.thePlayer.addChatMessage(new net.minecraft.util.ChatComponentText(EnumChatFormatting.YELLOW + "[Begger] Sending test webhook..."));
         }
 
-        // Capture screenshot on main thread
         File screenshot = WebhookUtil.captureScreenshot();
 
-        // Send in background
         new Thread(() -> {
             try {
                 String content = "**[TEST] Rank Begger - Gift Received!**\n" +
@@ -50,7 +48,6 @@ public class WebhookTestModule extends Module {
             }
         }).start();
 
-        // Automatically disable after sending
         this.toggled = false;
         this.onDisable();
     }

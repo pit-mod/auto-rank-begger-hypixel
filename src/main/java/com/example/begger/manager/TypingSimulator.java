@@ -4,9 +4,6 @@ import com.example.begger.context.BeggerContext;
 import com.example.begger.system.impl.RankBeggerModule;
 import com.example.begger.util.McUtil;
 
-/**
- * Simulates human-like typing delays and applies text humanization.
- */
 public class TypingSimulator {
 
     private final BeggerContext ctx;

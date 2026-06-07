@@ -24,10 +24,6 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 import java.io.File;
 import java.util.List;
 
-/**
- * Handles gift detection, acceptance (chat/chest/book GUIs),
- * and webhook notifications on gift receipt.
- */
 public class GiftManager {
 
     private final BeggerContext ctx;
@@ -44,8 +40,6 @@ public class GiftManager {
         this.ctx = ctx;
         this.rankDetector = rankDetector;
     }
-
-    // ── Chat-based gift acceptance ────────────────────────────────
 
     public void findAndClickAccept(IChatComponent component) {
         if (component == null) return;
@@ -79,8 +73,6 @@ public class GiftManager {
         }
     }
 
-    // ── Chest/Book GUI gift handling ──────────────────────────────
-
     public void handleChestGiftGui(GuiOpenEvent event) {
         if (event.gui instanceof GuiChest) {
             GuiChest guiChest = (GuiChest) event.gui;
@@ -96,7 +88,12 @@ public class GiftManager {
                                     container.windowId, slot.slotNumber, 0, 0, McUtil.player());
                             McUtil.sendChat("Thanks");
                         };
-                        webhookScreenshotTicks = 10;
+                        if (isWebhookEnabled()) {
+                            webhookScreenshotTicks = 10;
+                        } else {
+                            postScreenshotAction.run();
+                            postScreenshotAction = null;
+                        }
                         break;
                     }
                 }
@@ -105,8 +102,6 @@ public class GiftManager {
             lastBookAcceptClick = System.currentTimeMillis() - 2000L;
         }
     }
-
-    // ── Tick processing ──────────────────────────────────────────
 
     public void tick(long now) {
         if (webhookScreenshotTicks > 0) {
@@ -133,15 +128,13 @@ public class GiftManager {
         }
     }
 
-    // ── Book GUI automation (uses cached reflection) ─────────────
-
     private void handleBookGui(GuiScreenBook gui) {
-        // 1. Extract book ItemStack via cached reflection
+
         ItemStack bookStack = null;
         if (ReflectionCache.BOOK_STACK_FIELD != null) {
             try {
                 bookStack = (ItemStack) ReflectionCache.BOOK_STACK_FIELD.get(gui);
-            } catch (Exception e) { /* ignore */ }
+            } catch (Exception e) {  }
         }
 
         if (bookStack != null) {
@@ -167,7 +160,6 @@ public class GiftManager {
             return;
         }
 
-        // 2. Scan for YES button via cached reflection
         if (ReflectionCache.BOOK_GET_CHAT_COMPONENT != null) {
             ScaledResolution sr = new ScaledResolution(McUtil.mc());
             int width = sr.getScaledWidth();
@@ -190,7 +182,7 @@ public class GiftManager {
                                 break;
                             }
                         }
-                    } catch (Exception e) { /* ignore */ }
+                    } catch (Exception e) {  }
                 }
                 if (targetX != -1) break;
             }
@@ -212,13 +204,15 @@ public class GiftManager {
                 if (!clicked && ReflectionCache.SCREEN_MOUSE_CLICKED != null) {
                     try {
                         ReflectionCache.SCREEN_MOUSE_CLICKED.invoke(gui, targetX, targetY, 0);
-                    } catch (Exception e) { /* ignore */ }
+                    } catch (Exception e) {  }
                 }
 
                 bookClickCount++;
                 if (bookClickCount == 1) {
                     McUtil.sendChat("Thanks");
-                    webhookScreenshotTicks = 10;
+                    if (isWebhookEnabled()) {
+                        webhookScreenshotTicks = 10;
+                    }
                 }
             }
         }
@@ -240,7 +234,7 @@ public class GiftManager {
                         if (ReflectionCache.SCREEN_ACTION_PERFORMED != null) {
                             try {
                                 ReflectionCache.SCREEN_ACTION_PERFORMED.invoke(gui, button);
-                            } catch (Exception e) { /* ignore */ }
+                            } catch (Exception e) {  }
                         }
                         break;
                     }
@@ -252,14 +246,12 @@ public class GiftManager {
         }
     }
 
-    // ── Webhook notification ─────────────────────────────────────
-
     private void onGiftReceived() {
         RankBeggerModule mod = RankBegger.moduleManager.getModuleByClass(RankBeggerModule.class);
         if (mod == null) return;
 
-        String url = mod.webhookUrl.getContent();
-        if (url == null || url.isEmpty()) return;
+        String url = WebhookUtil.normalizeWebhookUrl(mod.webhookUrl.getContent());
+        if (!WebhookUtil.isConfigured(url)) return;
 
         long now = System.currentTimeMillis();
         long actualDuration = now - ctx.lastGiftAcceptedTime;
@@ -275,7 +267,6 @@ public class GiftManager {
                 "Time taken: `" + timeStr + "`\n" +
                 "Messages sent: `" + msgs + "`";
 
-        // Capture screenshot on main thread, send async
         File screenshot = WebhookUtil.captureScreenshot();
         new Thread(() -> {
             try {
@@ -293,6 +284,14 @@ public class GiftManager {
     }
 
     public void setWebhookScreenshotTicks(int ticks) {
+        if (ticks > 0 && !isWebhookEnabled()) {
+            return;
+        }
         this.webhookScreenshotTicks = ticks;
+    }
+
+    private boolean isWebhookEnabled() {
+        RankBeggerModule mod = RankBegger.moduleManager.getModuleByClass(RankBeggerModule.class);
+        return mod != null && WebhookUtil.isConfigured(mod.webhookUrl.getContent());
     }
 }

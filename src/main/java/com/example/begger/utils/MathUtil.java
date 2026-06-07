@@ -19,8 +19,4 @@ public class MathUtil {
         return start + (end - start) * delta;
     }
 
-    public static double lerp(double start, double end, double delta) {
-        return start + (end - start) * delta;
-    }
-
 }

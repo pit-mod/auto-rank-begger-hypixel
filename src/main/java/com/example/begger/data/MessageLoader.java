@@ -9,10 +9,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Loads message templates from JSON resource files at runtime.
- * Falls back to empty lists if resources are missing.
- */
 public final class MessageLoader {
 
     private static final Gson GSON = new Gson();

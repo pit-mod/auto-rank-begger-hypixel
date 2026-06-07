@@ -22,7 +22,7 @@ public class ClickGuiModule extends Module {
     public ClickGuiModule() {
         super("ClickGUI", Category.RENDER);
         this.hidden = false;
-        
+
         RankBegger.settingsManager.addSetting(guiScale, this);
         RankBegger.settingsManager.addSetting(windowWidth, this);
         RankBegger.settingsManager.addSetting(windowHeight, this);

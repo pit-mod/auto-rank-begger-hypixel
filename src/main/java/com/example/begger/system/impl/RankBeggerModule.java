@@ -11,10 +11,6 @@ public class RankBeggerModule extends Module {
     public BooleanSetting simulateTyping;
     public BooleanSetting humanizeText;
     public NumberSetting delay;
-    public com.example.begger.settings.impl.InputSetting customMessage;
-    public com.example.begger.settings.impl.ButtonSetting addMsgBtn;
-    public com.example.begger.settings.impl.ButtonSetting clearMsgsBtn;
-
     public com.example.begger.settings.impl.BooleanSetting failsafe;
     public com.example.begger.settings.impl.BooleanSetting showHud;
     public NumberSetting hudX;
@@ -25,7 +21,7 @@ public class RankBeggerModule extends Module {
     public RankBeggerModule() {
         super("Rank Begger", Category.BEGGER);
         this.toggled = true;
-        
+
         smartMode = new BooleanSetting("Smart Mode", this, true);
         simulateTyping = new BooleanSetting("Simulate Typing", this, true);
         humanizeText = new BooleanSetting("Humanize Text", this, true);
@@ -35,29 +31,6 @@ public class RankBeggerModule extends Module {
         hudX = new NumberSetting("HUD X", this, 10, 0, 2000, 0);
         hudY = new NumberSetting("HUD Y", this, 10, 0, 2000, 0);
         hudDesign = new com.example.begger.settings.impl.SimpleModeSetting("HUD Design", this, new String[]{"Nebula", "Taunahi", "Polar", "Polinex", "Wielix"}, "Nebula");
-
-        customMessage = new com.example.begger.settings.impl.InputSetting("Message", this, "");
-        addMsgBtn = new com.example.begger.settings.impl.ButtonSetting("Add Message", this, () -> {
-            String msg = customMessage.getContent();
-            if (!msg.trim().isEmpty()) {
-                com.example.begger.Config.messages.add(msg);
-                com.example.begger.Config.save();
-                customMessage.setContent("");
-                if (net.minecraft.client.Minecraft.getMinecraft().thePlayer != null) {
-                    net.minecraft.client.Minecraft.getMinecraft().thePlayer.addChatMessage(
-                        new net.minecraft.util.ChatComponentText(net.minecraft.util.EnumChatFormatting.GREEN + "Added message: " + msg));
-                }
-            }
-        });
-        clearMsgsBtn = new com.example.begger.settings.impl.ButtonSetting("Clear All", this, () -> {
-            com.example.begger.Config.messages.clear();
-            com.example.begger.Config.save();
-            if (net.minecraft.client.Minecraft.getMinecraft().thePlayer != null) {
-                net.minecraft.client.Minecraft.getMinecraft().thePlayer.addChatMessage(
-                    new net.minecraft.util.ChatComponentText(net.minecraft.util.EnumChatFormatting.RED + "Cleared all messages!"));
-            }
-        });
-
         webhookUrl = new com.example.begger.settings.impl.InputSetting("Webhook URL", this, "");
 
         RankBegger.settingsManager.addSetting(smartMode, this);
@@ -70,8 +43,5 @@ public class RankBeggerModule extends Module {
         RankBegger.settingsManager.addSetting(hudY, this);
         RankBegger.settingsManager.addSetting(hudDesign, this);
         RankBegger.settingsManager.addSetting(webhookUrl, this);
-        RankBegger.settingsManager.addSetting(customMessage, this);
-        RankBegger.settingsManager.addSetting(addMsgBtn, this);
-        RankBegger.settingsManager.addSetting(clearMsgsBtn, this);
     }
 }

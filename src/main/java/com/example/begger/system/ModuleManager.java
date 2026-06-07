@@ -4,7 +4,6 @@ import com.example.begger.system.impl.RankBeggerModule;
 import com.example.begger.system.impl.AutoReconnectModule;
 import com.example.begger.system.impl.ClickGuiModule;
 import com.example.begger.system.impl.WebhookTestModule;
-import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,6 @@ public class ModuleManager {
         addModule(new AutoReconnectModule());
         addModule(new ClickGuiModule());
         addModule(new WebhookTestModule());
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
     public void addModule(Module m) {
@@ -26,13 +24,6 @@ public class ModuleManager {
 
     public List<Module> getModules() {
         return modules;
-    }
-
-    public Module getModuleByName(String name) {
-        for (Module m : modules) {
-            if (m.getName().equalsIgnoreCase(name)) return m;
-        }
-        return null;
     }
 
     public <T extends Module> T getModuleByClass(Class<T> clazz) {

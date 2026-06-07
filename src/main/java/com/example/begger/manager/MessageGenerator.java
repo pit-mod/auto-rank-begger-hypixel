@@ -8,10 +8,6 @@ import com.example.begger.system.Rank;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Generates beg messages, gift responses, and ID messages.
- * All templates are loaded from JSON resources via MessageLoader.
- */
 public class MessageGenerator {
 
     private final BeggerContext ctx;

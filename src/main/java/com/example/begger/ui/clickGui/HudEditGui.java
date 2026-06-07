@@ -56,11 +56,11 @@ public class HudEditGui extends GuiChat implements MM, com.example.begger.utils.
             if (!hasPositionSettings(m)) continue;
 
             float posX = 0, posY = 0;
-            for (com.example.begger.settings.Setting s : sm.getValuesByMod(m)) {
-                if (s.getName().equals("X Pos") || s.getName().equals("X") || s.getName().equals("xPos")) {
+            for (Setting s : sm.getValuesByMod(m)) {
+                if (s.getName().equals("HUD X")) {
                     posX = (float) ((NumberSetting) s).getValue();
                 }
-                if (s.getName().equals("Y Pos") || s.getName().equals("Y") || s.getName().equals("yPos")) {
+                if (s.getName().equals("HUD Y")) {
                     posY = (float) ((NumberSetting) s).getValue();
                 }
             }
@@ -96,9 +96,8 @@ public class HudEditGui extends GuiChat implements MM, com.example.begger.utils.
     }
 
     private boolean hasPositionSettings(Module m) {
-        for (com.example.begger.settings.Setting s : sm.getValuesByMod(m)) {
-            String name = s.getName();
-            if (name.equals("X Pos") || name.equals("X") || name.equals("xPos")) {
+        for (Setting s : sm.getValuesByMod(m)) {
+            if (s.getName().equals("HUD X")) {
                 return true;
             }
         }

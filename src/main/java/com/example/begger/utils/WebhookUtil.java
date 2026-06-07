@@ -12,7 +12,27 @@ import java.util.UUID;
 
 public class WebhookUtil {
 
+    private static final String LEGACY_DEFAULT_WEBHOOK_ID = "1446578954264645655";
+
+    public static String normalizeWebhookUrl(String url) {
+        if (url == null) {
+            return "";
+        }
+        url = url.trim();
+        if (url.isEmpty() || url.contains(LEGACY_DEFAULT_WEBHOOK_ID)) {
+            return "";
+        }
+        return url;
+    }
+
+    public static boolean isConfigured(String webhookUrl) {
+        return !normalizeWebhookUrl(webhookUrl).isEmpty();
+    }
+
     public static void sendWebhook(String webhookUrl, String content, File screenshot) {
+        if (!isConfigured(webhookUrl)) {
+            return;
+        }
         new Thread(() -> {
             try {
                 URL url = new URL(webhookUrl);
@@ -26,13 +46,11 @@ public class WebhookUtil {
                 try (OutputStream out = connection.getOutputStream();
                      PrintWriter writer = new PrintWriter(new OutputStreamWriter(out, "UTF-8"), true)) {
 
-                    // Content part
                     writer.println("--" + boundary);
                     writer.println("Content-Disposition: form-data; name=\"content\"");
                     writer.println();
                     writer.println(content);
 
-                    // File part
                     if (screenshot != null && screenshot.exists()) {
                         writer.println("--" + boundary);
                         writer.println("Content-Disposition: form-data; name=\"file\"; filename=\"" + screenshot.getName() + "\"");
@@ -60,8 +78,7 @@ public class WebhookUtil {
                         System.err.println("Webhook failed with response code: " + responseCode);
                     }
                 }
-                
-                // Cleanup temp file
+
                 if (screenshot != null && screenshot.exists() && screenshot.getName().startsWith("temp_gift_")) {
                     screenshot.delete();
                 }
@@ -101,10 +118,10 @@ public class WebhookUtil {
 
             pixelBuffer.get(pixelValues);
             net.minecraft.client.renderer.texture.TextureUtil.processPixelValues(pixelValues, width, height);
-            
+
             BufferedImage bufferedimage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
             bufferedimage.setRGB(0, 0, width, height, pixelValues, 0, width);
-            
+
             File tempFile = File.createTempFile("temp_gift_", ".png");
             ImageIO.write(bufferedimage, "png", tempFile);
             return tempFile;

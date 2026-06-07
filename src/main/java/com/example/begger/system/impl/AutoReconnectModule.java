@@ -79,7 +79,7 @@ public class AutoReconnectModule extends Module {
     public void onTick(TickEvent.ClientTickEvent event) {
         if (!toggled) return;
         if (event.phase != TickEvent.Phase.END) return;
-        
+
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.currentScreen instanceof GuiDisconnected) {
             if (reconnecting) {

@@ -23,13 +23,9 @@ public class RankBegger {
     public static ModuleManager moduleManager;
     public static SettingsManager settingsManager;
     public static com.example.begger.ui.font.FontManager fontManager;
-    public static RankBegger instance;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        instance = this;
-        
-        // Initialize settingsManager BEFORE moduleManager
         settingsManager = new SettingsManager();
         moduleManager = new ModuleManager();
         fontManager = new com.example.begger.ui.font.FontManager();

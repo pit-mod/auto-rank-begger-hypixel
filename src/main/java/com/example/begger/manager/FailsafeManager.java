@@ -15,14 +15,10 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StringUtils;
 
-/**
- * Manages lobby navigation failsafes.
- * Uses BeggerContext for state and McUtil for Minecraft interaction.
- */
 public class FailsafeManager {
 
     private final BeggerContext ctx;
-    
+
     private final Timer failsafeTimer = new Timer();
     private final Timer guiClickTimer = new Timer();
     private boolean limboSentOnce = false;
@@ -33,8 +29,8 @@ public class FailsafeManager {
 
     public void tick(RankBeggerModule mod) {
         String title = Utils.getScoreboardTitle();
-        
-        if (title.isEmpty() || (!title.toUpperCase().contains("BED WARS") && !title.equalsIgnoreCase("HYPIXEL"))) { 
+
+        if (title.isEmpty() || (!title.toUpperCase().contains("BED WARS") && !title.equalsIgnoreCase("HYPIXEL"))) {
             ctx.reachedLobby1 = false;
             if (ctx.failsafeState != FailsafeState.LIMBO) {
                 ctx.failsafeState = FailsafeState.LIMBO;

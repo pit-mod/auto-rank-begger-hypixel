@@ -5,9 +5,6 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
-/**
- * Static helpers to reduce Minecraft boilerplate across all managers.
- */
 public final class McUtil {
 
     private McUtil() {}
