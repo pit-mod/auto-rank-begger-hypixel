@@ -1,0 +1,16 @@
+[
+{
+  "modid": "rankbegger",
+  "name": "Auto Rank Begger Hypixel",
+  "description": "Automated rank gift begging for Hypixel Pit lobbies.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["lucasdqzdqsdqef"],
+  "credits": "Based on Vip-Begger by coureuse",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
